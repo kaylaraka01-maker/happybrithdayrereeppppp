@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>untuk my love</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+    :root {
+            --primary: #0d47a1; 
+            --bg-soft: #f4f9ff;
+            --spotify-blue: #004d8c;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-soft);
+            overflow: hidden;
+            touch-action: manipulation;
+            color: var(--primary);
+            margin: 0;
+            height: 100vh;
+        }
+
+        /* Particle Effect Canvas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Rain Animation Container */
+        #rain-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            display: none; 
+        }
+
+        .emote-rain {
+            position: absolute;
+            top: -50px;
+            font-size: 1.5rem;
+            animation: fall linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh); }
+        }
+
+        .text-header {
+            font-weight: 900;
+            font-size: 1.6rem;
+            line-height: 1.3;
+            color: #0d47a1;
+            max-width: 340px;
+            margin: 0 auto;
+        }
+
+        /* --- ANIMASI TOMBOL DENGAN FEEDBACK --- */
+        .btn-custom {
+            background-color: #0d47a1;
+            color: white;
+            font-weight: 800;
+            padding: 12px 32px;
+            border-radius: 9999px;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.95rem;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(13, 71, 161, 0.2);
+            border: none;
+            cursor: pointer;
+            z-index: 20;
+            position: relative;
+        }
+
+        .btn-custom:active {
+            transform: scale(0.92) translateY(2px);
+            background-color: #0a3a82;
+            box-shadow: 0 2px 8px rgba(13, 71, 161, 0.1);
+        }
+
+        .btn-outline-custom {
+            border: 2.5px solid #0d47a1;
+            color: #0d47a1;
+            font-weight: 800;
+            padding: 10px 32px;
+            border-radius: 20px;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-outline-custom:active {
+            transform: scale(0.92);
+            background-color: rgba(13, 71, 161, 0.1);
+        }
+
+        .keypad-btn {
+            width: 65px;
+            height: 65px;
+            background: white;
+            border-radius: 18px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .keypad-btn:active {
+            transform: scale(0.85);
+            background: #eef4ff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        /* --------------------------- */
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .final-msg-wrapper {
+            max-width: 320px;
+            width: 90%;
+            height: 200px; 
+            overflow-y: auto;
+            padding: 0 12px;
+            margin: 20px auto;
+            text-align: left;
+            position: relative;
+            z-index: 10;
+            scroll-behavior: smooth;
+        }
+
+        #typing-text {
+            border-left: 4px solid #0d47a1;
+            padding-left: 15px;
+            transition: all 0.1s ease;
+        }
+
+        .final-msg-wrapper::-webkit-scrollbar {
+            width: 5px;
+        }
+        .final-msg-wrapper::-webkit-scrollbar-track {
+            background: rgba(13, 71, 161, 0.05);
+        }
+        .final-msg-wrapper::-webkit-scrollbar-thumb {
+            background: #0d47a1;
+            border-radius: 10px;
+        }
+
+        .music-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            border: 2.5px solid #0d47a1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            z-index: 100;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .music-btn:active {
+            transform: scale(0.8);
+        }
+
+        .music-btn.playing {
+            animation: spin 4s linear infinite;
+            background: #0d47a1;
+        }
+
+        .music-btn.playing svg {
+            fill: white;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        .dot.active {
+            background: #0d47a1;
+            border-color: #0d47a1;
+            transform: scale(1.3);
+        }
+
+        .photo-card {
+            width: 240px;
+            height: 200px;
+            background: white;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .spotify-card {
+            background: #005a9e;
+            width: 320px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            color: white;
+            text-align: left;
+            padding: 16px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background-color: #0d47a1;
+            margin-left: 2px;
+            animation: blink 0.7s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Particle Element Style */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 14px;
+            z-index: 1000;
+            animation: particle-anim 0.8s ease-out forwards;
+        }
+
+        @keyframes particle-anim {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0) rotate(var(--rot)); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center" onclick="createParticles(event)">
+
+    <div id="rain-container"></div>
+    <div id="particle-canvas"></div>
+
+    <!-- AUDIO ELEMENT -->
+    <audio id="myAudio" loop>
+        <source src="sound.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- TOMBOL MUSIK -->
+    <div id="musicToggle" class="music-btn shadow-md" onclick="toggleMusic()">
+        <svg id="musicIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#0d47a1" viewBox="0 0 16 16">
+            <path d="M9 13c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5.448-1.5 1-1.5 1 .672 1 1.5z"/>
+            <path fill-rule="evenodd" d="M9 3v10H8V3h1z"/>
+            <path d="M8 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 13 2.22V4L8 5V2.82z"/>
+        </svg>
+    </div>
+
+    <div id="app" class="relative w-full max-w-md h-[100dvh] flex flex-col items-center justify-center px-6 text-center z-10">
+        
+        <!-- SCREEN 1: PASSCODE -->
+        <div id="screen-passcode" class="w-full flex flex-col items-center animate-fade">
+            <img id="gif-1" src="https://cute-website-foryou.netlify.app/gif/stiker%201.gif" alt="Sticker" class="w-24 h-24 mb-6 floating">
+            <h2 class="text-header mb-8">hi love, tebak passwordnya!<br><span class="text-sm opacity-50 font-medium">i bet u know!!</span></h2>
+            
+            <div class="flex gap-4 mb-10">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 w-full max-w-[250px]">
+                <button onclick="pressKey('1', event)" class="keypad-btn">1</button>
+                <button onclick="pressKey('2', event)" class="keypad-btn">2</button>
+                <button onclick="pressKey('3', event)" class="keypad-btn">3</button>
+                <button onclick="pressKey('4', event)" class="keypad-btn">4</button>
+                <button onclick="pressKey('5', event)" class="keypad-btn">5</button>
+                <button onclick="pressKey('6', event)" class="keypad-btn">6</button>
+                <button onclick="pressKey('7', event)" class="keypad-btn">7</button>
+                <button onclick="pressKey('8', event)" class="keypad-btn">8</button>
+                <button onclick="pressKey('9', event)" class="keypad-btn">9</button>
+                <div></div><button onclick="pressKey('0', event)" class="keypad-btn">0</button>
+                <button onclick="clearKey(event)" class="flex items-center justify-center opacity-40 transition-transform active:scale-75">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
+                </button>
+            </div>
+            <p class="mt-8 text-[11px] font-black uppercase tracking-[0.4em] opacity-40">clue: your birthday (DDMMYY)</p>
+        </div>
+
+        <!-- SCREEN 2: HI PRETTY -->
+        <div id="screen-greeting" class="hidden w-full flex flex-col items-center animate-fade">
+            <img id="gif-2" src="" alt="Sticker" class="w-32 h-32 mb-8 floating">
+            <h1 class="text-header mb-10">hi, pretty 🫶🏻 👋🏻</h1>
+            <button onclick="nextScreen('screen-ready', event)" class="btn-custom">tap disinii <3</button>
+        </div>
+
+        <!-- SCREEN 3: READY? -->
+        <div id="screen-ready" class="hidden w-full flex flex-col items-center animate-fade">
+            <img id="gif-3" src="" alt="Sticker" class="w-40 h-40 mb-8 floating">
+            <h1 class="text-header mb-10">suda siap buka kan rerepp?</h1>
+            <div class="flex gap-4 w-full max-w-[280px]">
+                <button onclick="nextScreen('screen-birthday-1', event)" class="btn-custom flex-1">yess</button>
+                <button onclick="nextScreen('screen-no-response', event)" class="btn-outline-custom flex-1 shadow-sm">noo</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: NO RESPONSE -->
+        <div id="screen-no-response" class="hidden w-full flex flex-col items-center animate-fade">
+            <img id="gif-4" src="" alt="Sticker" class="w-40 h-40 mb-8 floating">
+            <h1 class="text-header mb-10">OH GITU SEKARANG KAMU SAMA AKU? 😡</h1>
+            <button onclick="nextScreen('screen-ready', event)" class="btn-custom">back</button>
+        </div>
+
+        <!-- SCREEN 5: BIRTHDAY GIRL 18 -->
+        <div id="screen-birthday-1" class="hidden w-full flex flex-col items-center animate-fade">
+            <img id="gif-5" src="" alt="Sticker" class="w-48 h-48 mb-6 floating bg-white rounded-2xl p-4 shadow-sm">
+            <h1 class="text-header mb-10">yeay hari ini, ceweku rereppku yang cantik ini ulang tahun ke-18 Selamat ulang tahun, sayangku., my love 🤍</h1>
+            <button onclick="nextScreen('screen-love-msg', event)" class="btn-custom">open it <3</button>
+        </div>
+
+        <!-- SCREEN 6: LOVE MESSAGE -->
+        <div id="screen-love-msg" class="hidden w-full flex flex-col items-center animate-fade">
+            <img id="gif-love" src="" alt="Sticker Love" class="w-44 h-44 mb-6 floating">
+            <h1 class="text-header mb-2">happy birthday rereppp to my most beautiful, loving, and caring girlfriend 🤍</h1>
+            <p class="text-[13px] font-bold opacity-60 mb-10">I love youu so muchh!!!</p>
+            <button onclick="nextScreen('screen-pre-photo', event)" class="btn-custom">i have something for you 💌</button>
+        </div>
+
+        <!-- SCREEN 7: PRE-PHOTO MESSAGE -->
+        <div id="screen-pre-photo" class="hidden w-full flex flex-col items-center animate-fade">
+            <img id="gif-pre" src="" alt="Sticker Celebration" class="w-44 h-44 mb-6 floating">
+            <h1 class="text-header mb-10">okayy last one, i made something for your birthday, read it slowly okayyy</h1>
+            <button onclick="nextScreen('screen-photo-1', event)" class="btn-custom px-10"><3</button>
+        </div>
+
+        <!-- SCREEN 8 - 11: PHOTOS -->
+        <div id="screen-photo-1" class="hidden w-full flex flex-col items-center animate-fade">
+            <div class="photo-card"><img src="ft29.jpg" class="w-full h-full object-cover rounded-xl"></div>
+            <h1 class="text-header mb-10">ini foto pertama kita lucu ya sayang, momen yang akan selalu aku ingat </h1>
+            <button onclick="nextScreen('screen-photo-2', event)" class="btn-custom">klik ini <3</button>
+        </div>
+        <div id="screen-photo-2" class="hidden w-full flex flex-col items-center animate-fade">
+            <div class="photo-card"><img src="ft7.jpg" class="w-full h-full object-cover rounded-xl"></div>
+            <h1 class="text-header mb-10">every second with you is my favorite memory ever</h1>
+            <button onclick="nextScreen('screen-photo-3', event)" class="btn-custom">klik ini <3</button>
+        </div>
+        <div id="screen-photo-3" class="hidden w-full flex flex-col items-center animate-fade">
+            <div class="photo-card"><img src="ft21.jpg" class="w-full h-full object-cover rounded-xl"></div>
+            <h1 class="text-header mb-10">thank you for being the kindest person in my life</h1>
+            <button onclick="nextScreen('screen-photo-4', event)" class="btn-custom">klik ini <3</button>
+        </div>
+        <div id="screen-photo-4" class="hidden w-full flex flex-col items-center animate-fade">
+            <div class="photo-card"><img src="ft1.jpg" class="w-full h-full object-cover rounded-xl"></div>
+            <h1 class="text-header mb-4">you deserve the world and i'll always love you</h1>
+            <p class="text-[14px] leading-relaxed text-[#0d47a1] opacity-70 mb-10 px-4">you never gave up on me and for that im forever grateful</p>
+            <button onclick="nextScreen('screen-our-song', event)" class="btn-custom">klik ini <3</button>
+        </div>
+
+        <!-- SCREEN 12: OUR SONG -->
+        <div id="screen-our-song" class="hidden w-full flex flex-col items-center animate-fade">
+            <img src="https://cdn-icons-png.flaticon.com/512/9448/9448086.png" alt="Music Notes Icon" class="w-40 h-40 mb-4 floating cursor-pointer active:scale-90 transition-transform" onclick="nextScreen('screen-playlist', event)">
+            <h1 class="text-header text-[1.4rem] tracking-tight">our song 🎵</h1>
+            <button onclick="nextScreen('screen-playlist', event)" class="btn-custom mt-12">open playlist <3</button>
+        </div>
+
+        <!-- SCREEN 13: SPOTIFY PLAYLIST -->
+        <div id="screen-playlist" class="hidden w-full flex flex-col items-center animate-fade">
+            <div class="spotify-card">
+                <div class="playlist-header flex items-center gap-4 mb-4">
+                    <img src="ft5.jpg" alt="Cinnamoroll" class="w-24 h-24 rounded-lg object-cover">
+                    <div>
+                        <h2 class="font-black text-xl">for u</h2>
+                        <p class="text-xs opacity-70">Our Special Playlist</p>
+                    </div>
+                </div>
+                <div class="track-list border-t border-white/20 pt-4">
+                    <div class="flex justify-between text-sm font-bold">
+                        <span>All Our Favorite Songs</span>
+                        <span class="opacity-50">...</span>
+                    </div>
+                </div>
+            </div>
+            <button onclick="nextScreen('screen-final-message', event)" class="btn-custom mt-8">Lanjut <3</button>
+        </div>
+
+        <!-- SCREEN 14: FINAL ROMANTIC MESSAGE -->
+        <div id="screen-final-message" class="hidden w-full flex flex-col items-center justify-center animate-fade">
+            <h2 class="text-[#0d47a1] font-black text-xl mb-4">happy birthday, my love🤍🤍</h2>
+            
+            <div class="final-msg-wrapper" id="scroll-area">
+                <p id="typing-text" class="text-[#0d47a1] font-bold text-[15px] leading-relaxed"></p>
+            </div>
+
+            <button onclick="resetApp(event)" class="btn-custom mt-8">Selesai ✨</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPass = "";
+        const CORRECT_PASS = "120608"; 
+        let loopInterval = null;
+        let rainTicker = null;
+        let isPlaying = false;
+        
+        const audio = document.getElementById('myAudio');
+        const musicBtn = document.getElementById('musicToggle');
+
+        const GIF_URLS = {
+            1: "https://cute-website-foryou.netlify.app/gif/stiker%201.gif",
+            2: "https://cute-website-foryou.netlify.app/gif/stiker%202.gif",
+            3: "https://cute-website-foryou.netlify.app/gif/stiker%203.gif",
+            4: "https://cute-website-foryou.netlify.app/gif/stiker%204.gif",
+            5: "https://cute-website-foryou.netlify.app/gif/stiker%205.gif",
+            "love": "https://cute-website-foryou.netlify.app/gif/stiker%206.gif",
+            "pre": "https://cute-website-foryou.netlify.app/gif/stiker%207.gif"
+        };
+
+        // --- EFEEK PARTIKEL ---
+        function createParticles(e) {
+            const container = document.getElementById('particle-canvas');
+            const particlesCount = 8;
+            const colors = ['#0d47a1', '#64b5f6', '#bbdefb', '#ffffff', '❤️', '✨'];
+
+            for (let i = 0; i < particlesCount; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                
+                // Random tipe: teks (emoji) atau lingkaran warna
+                const isEmoji = Math.random() > 0.7;
+                if (isEmoji) {
+                    p.innerText = colors[Math.floor(Math.random() * 2) + 4]; // Pilih ❤️ atau ✨
+                } else {
+                    p.style.width = '8px';
+                    p.style.height = '8px';
+                    p.style.borderRadius = '50%';
+                    p.style.backgroundColor = colors[Math.floor(Math.random() * 4)];
+                }
+
+                // Posisi awal di klik
+                const x = e.clientX || e.touches?.[0]?.clientX || window.innerWidth/2;
+                const y = e.clientY || e.touches?.[0]?.clientY || window.innerHeight/2;
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+
+                // Variabel animasi random
+                const tx = (Math.random() - 0.5) * 200;
+                const ty = (Math.random() - 0.5) * 200;
+                const rot = Math.random() * 360;
+                p.style.setProperty('--tx', `${tx}px`);
+                p.style.setProperty('--ty', `${ty}px`);
+                p.style.setProperty('--rot', `${rot}deg`);
+
+                container.appendChild(p);
+                setTimeout(() => p.remove(), 800);
+            }
+        }
+
+        function toggleMusic() {
+            if (audio.paused) {
+                playMusic();
+            } else {
+                pauseMusic();
+            }
+        }
+
+        function playMusic() {
+            audio.play().then(() => {
+                isPlaying = true;
+                musicBtn.classList.add('playing');
+            }).catch(err => console.log("Audio blocked"));
+        }
+
+        function pauseMusic() {
+            audio.pause();
+            isPlaying = false;
+            musicBtn.classList.remove('playing');
+        }
+
+        function pressKey(num, e) {
+            if (e) createParticles(e);
+            if (currentPass.length < 6) {
+                currentPass += num;
+                updateDots();
+                if (currentPass.length === 6) {
+                    setTimeout(checkPass, 300);
+                }
+            }
+        }
+
+        function clearKey(e) {
+            if (e) createParticles(e);
+            currentPass = currentPass.slice(0, -1);
+            updateDots();
+        }
+
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => dot.classList.toggle('active', index < currentPass.length));
+        }
+
+        function checkPass() {
+            if (currentPass === CORRECT_PASS) {
+                playMusic();
+                nextScreen('screen-greeting');
+            } else {
+                currentPass = "";
+                updateDots();
+                const container = document.getElementById('screen-passcode');
+                container.style.animation = 'shake 0.4s ease';
+                setTimeout(() => container.style.animation = '', 400);
+            }
+        }
+
+        function nextScreen(id, e) {
+            if (e) createParticles(e);
+            if (loopInterval) clearInterval(loopInterval);
+            
+            document.querySelectorAll('#app > div').forEach(div => div.classList.add('hidden'));
+            stopRain();
+
+            const target = document.getElementById(id);
+            if (target) {
+                target.classList.remove('hidden');
+            } else {
+                return;
+            }
+
+            if (id === 'screen-greeting') startForcedLoop(2, 2100); 
+            if (id === 'screen-ready') startForcedLoop(3, 2600);    
+            if (id === 'screen-no-response') startForcedLoop(4, 2100);
+            if (id === 'screen-birthday-1') startForcedLoop(5, 2100);
+            if (id === 'screen-love-msg') startForcedLoop("love", 2100);
+            if (id === 'screen-pre-photo') startForcedLoop("pre", 2100);
+            
+            if (id === 'screen-final-message') {
+                startRain(); 
+                startTypingEffect();
+            }
+        }
+
+        function startForcedLoop(key, duration) {
+            let imgId = 'gif-' + key;
+            if(key === "love") imgId = 'gif-love';
+            if(key === "pre") imgId = 'gif-pre';
+            const img = document.getElementById(imgId);
+            if(!img) return;
+            const updateSrc = () => { img.src = GIF_URLS[key] + "?t=" + new Date().getTime(); };
+            updateSrc(); 
+            loopInterval = setInterval(updateSrc, duration);
+        }
+
+        function startRain() {
+            const container = document.getElementById('rain-container');
+            container.style.display = 'block';
+            const emotes = ['💙', '💫'];
+            if (rainTicker) clearInterval(rainTicker);
+            rainTicker = setInterval(() => {
+                const emote = document.createElement('div');
+                emote.className = 'emote-rain';
+                emote.innerText = emotes[Math.floor(Math.random() * emotes.length)];
+                emote.style.left = Math.random() * 100 + 'vw';
+                emote.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                emote.style.opacity = Math.random() * 0.6 + 0.3;
+                container.appendChild(emote);
+                setTimeout(() => emote.remove(), 5000);
+            }, 250);
+        }
+
+        function stopRain() {
+            const container = document.getElementById('rain-container');
+            container.style.display = 'none';
+            container.innerHTML = '';
+            if (rainTicker) clearInterval(rainTicker);
+        }
+
+        async function startTypingEffect() {
+            const fullText = "On your special day, I just want to remind you how grateful I am to have you in my life. Thank you for being the amazing person you are—kind, loving, and always making everything feel a little warmer just by being around.\n\nYou never gave up on me and for that im forever grateful. I hope this new year of your life brings you as much happiness as you've given me. You deserve every bit of love and joy in this world.\n\nHappy 18th birthday, my beautiful universe. I love you more than words can say.";
+            
+            const el = document.getElementById('typing-text');
+            const scrollArea = document.getElementById('scroll-area');
+            el.innerHTML = '';
+            
+            const cursor = document.createElement('span');
+            cursor.className = 'cursor';
+            el.appendChild(cursor);
+
+            for (let i = 0; i < fullText.length; i++) {
+                if (fullText[i] === "\n") {
+                    cursor.before(document.createElement('br'));
+                } else {
+                    cursor.before(fullText[i]);
+                }
+                scrollArea.scrollTop = scrollArea.scrollHeight;
+                await new Promise(r => setTimeout(r, 45));
+            }
+            cursor.remove();
+        }
+
+        function resetApp(e) {
+            if (e) createParticles(e);
+            currentPass = "";
+            pauseMusic();
+            audio.currentTime = 0;
+            updateDots();
+            nextScreen('screen-passcode');
+        }
+
+        window.onload = function() { 
+            startForcedLoop(1, 2100); 
+        };
+    </script>
+</body>
+</html>
